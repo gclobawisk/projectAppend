@@ -1,3 +1,11 @@
+const date = new Date();
+const today = date.getDate();
+const currentMonth = date.getMonth() + 1;
+const currentYear = date.getFullYear();
+dataAgora = currentYear+'-'+currentMonth+'-'+today
+console.log(dataAgora)
+document.getElementById("inputData").value = dataAgora
+
 i = 1
 array = [1]
 let objetooooooo = [
@@ -99,23 +107,56 @@ function removeElemento(id){
 function save(){
     event.preventDefault();
 
-    razaoSocial = document.getElementById('inputRazaoSocial1').value;
-    nomeFantasia = document.getElementById('inputNomeFantasia1').value;
+    inputRazaoSocial = document.getElementById('inputRazaoSocial1').value;
+    inputCNPJ = document.getElementById('inputCNPJ1').value;
+    inputNomeFantasia = document.getElementById('inputNomeFantasia1').value;
+    inputInscricaoEstadual = document.getElementById('inputInscricaoEstadual1').value;
+    inputCEP = document.getElementById('inputCEP1').value;
+    inputInscricaoMunicipal = document.getElementById('inputInscricaoMunicipal1').value;
+    inputEndereco = document.getElementById('inputEndereco1').value;
+    inputComplemento = document.getElementById('inputComplemento1').value;
+    inputNumero = document.getElementById('inputNumero1').value;
+    inputBairro = document.getElementById('inputBairro1').value;
+    inputEstado = document.getElementById('inputEstado1').value;
+    inputMunicipio = document.getElementById('inputMunicipio1').value;
+    inputPessoaContato = document.getElementById('inputPessoaContato1').value;
+    inputTelefone = document.getElementById('inputTelefone1').value;
+    inputEmail = document.getElementById('inputEmail1').value;
+          
 
     const objeto = new Object()
-    objeto.razaoSocial = razaoSocial
-    objeto.nomeFantasia = nomeFantasia
+    objeto.razaoSocial = inputRazaoSocial
+    objeto.CNPJ = inputCNPJ
+    objeto.nomeFantasia = inputNomeFantasia
+    objeto.InscricaoEstadual = inputInscricaoEstadual
 
-    produtos = new Object()
+    objeto.CEP = inputCEP
+    objeto.InscricaoMunicipal = inputInscricaoMunicipal
+    objeto.inputEndereco = inputEndereco
+    objeto.Complemento = inputComplemento
+    objeto.Numero = inputNumero
+    objeto.Bairro = inputBairro
+    objeto.Estado = inputEstado
+    objeto.Municipio = inputMunicipio
+    objeto.Contato = inputPessoaContato
+    objeto.Telefone = inputTelefone
+    objeto.Email = inputEmail
+
+    
+    array_produtos = []    
     
     for (i=0; i < array.length; i++){
         nomeDescricaoProduto = document.getElementById('inputDescricaoProduto'+array[i]).value;
-        
-        produtos.indice = i;
+
+        produtos = new Object()
+        produtos.indice = i
         produtos.descricaoProduto = nomeDescricaoProduto
+       
+        array_produtos.push(produtos)
         
     }
-    objeto.produtos = produtos
+
+    objeto.produtos = array_produtos;
    
     
 
