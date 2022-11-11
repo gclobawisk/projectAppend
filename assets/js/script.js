@@ -3,36 +3,24 @@ const today = date.getDate();
 const currentMonth = date.getMonth() + 1;
 const currentYear = date.getFullYear();
 dataAgora = currentYear+'-'+currentMonth+'-'+today
-console.log(dataAgora)
 document.getElementById("inputData").value = dataAgora
 
+
+//MOSTRAR OS INPUTS SE EXISTIR
+
+
+
+
+//incrementador das divs dos produtos
 i = 1
-array = [1]
-let objetooooooo = [
-    {
-        razaoSocial: "",
-        CNPJ: 0,
-        nomeFantasia: "",
-        inscricalEstadual: "",
-        CEP: "",
-        InscricaoMunicipal: "",
-        Endereco: "",
-        Complemento: "",
-        Numero: "",
-        Bairro: "",
-        Estado: "",
-        Municipio: "",
-        nomePessoaContato: "",
-        telefone: "",
-        email: "",
-    }
-]
+array = [] // array para os ids das div's dos produtos que foram adicionadas 
+
 
 function adcElemento () {
     i++
     array.push(i)
     // cria um novo elemento div
-    // e dá à ele conteúdo
+    // e dá a ele conteúdo
     
     conteudo = getConteudo();
     
@@ -69,22 +57,22 @@ function adcElemento () {
   
                   '<div class="col-md-2">'+
                       '<label class="form-label">Und. Medida</label>'+
-                      '<input type="number" class="form-control" id="inputUnidadeMedida'+i+'" value="" required>'+
+                      '<input type="text" class="form-control" id="inputUnidadeMedida'+i+'" value="" required>'+
                   '</div>'+
   
                   '<div class="col-md-2">'+
                   '<label class="form-label">Qtd em Estoque</label>'+
-                  '<input type="number" class="form-control" id="inputQtdEstoque'+i+'" value="" required>'+
+                  '<input type="number" class="form-control" id="inputQtdEstoque'+i+'" value="" oninput="getValorTotal('+i+')" required>'+
                   '</div>'+
   
                   '<div class="col-md-2">'+
                       '<label class="form-label">Valor Unitário</label>'+
-                      '<input type="number" class="form-control" id="inputValorUnitario'+i+'" value="" required>'+
+                      '<input type="number" class="form-control" id="inputValorUnitario'+i+'" value="" step="0.1" oninput="getValorTotal('+i+')">'+
                   '</div>'+
   
-                  '<div class="col-md-2">'
+                  '<div class="col-md-2">'+
                   '<label class="form-label">Valor Total</label>'+
-                  '<input type="number" class="form-control" id="inputValorTotal'+i+'" value="" required>'+
+                  '<input type="number" class="form-control bg-secondary" id="inputValorTotal'+i+'" value="" required readonly>'+
                   '</div>'+
               '</div>'+
         '</div>'
@@ -94,13 +82,13 @@ function adcElemento () {
 }
 
 function removeElemento(id){
-    if (window.confirm(`Deseja deletar o ${id}?`)) {
+    if (window.confirm(`Deseja deletar este item ?`)) {
         var el = document.getElementById('div'+id);
         el.remove(el);
         posicao = array.indexOf(id);posicao
         array.splice(posicao, 1);
       }
-    alert(array)
+
     
 }
 
@@ -146,21 +134,191 @@ function save(){
     array_produtos = []    
     
     for (i=0; i < array.length; i++){
+
         nomeDescricaoProduto = document.getElementById('inputDescricaoProduto'+array[i]).value;
+        inputUnidadeMedida = document.getElementById('inputUnidadeMedida'+array[i]).value;
+        inputQtdEstoque = document.getElementById('inputQtdEstoque'+array[i]).value;
+        inputValorUnitario = document.getElementById('inputValorUnitario'+array[i]).value;
+        inputValorTotal = document.getElementById('inputValorTotal'+array[i]).value;
 
         produtos = new Object()
-        produtos.indice = i
-        produtos.descricaoProduto = nomeDescricaoProduto
-       
-        array_produtos.push(produtos)
+        produtos.indice = i+1
+        
+        if (array_produtos.length < 1){
+
+            if (!nomeDescricaoProduto){
+                alert("PREENCHA A DESCRICAO")
+            }else if (!inputUnidadeMedida){
+                alert("PREENCHA A UNIDADE")
+            }
+            else if (!inputQtdEstoque){
+                alert("PREENCHA O ESTOQUE")
+            }
+            else if (!inputValorUnitario){
+                alert("PREENCHA O ESTOQUE")
+            }else{
+                produtos.descricaoProduto = nomeDescricaoProduto
+                produtos.unidadeMedida = inputUnidadeMedida
+                produtos.qtdEstoque = inputQtdEstoque
+                produtos.valorUnitario = inputValorUnitario
+                produtos.ValorTotal = inputValorTotal
+    
+                array_produtos.push(produtos)
+            }
+
+        }
+                
+        
         
     }
 
     objeto.produtos = array_produtos;
-   
-    
 
-    localStorage.setItem('dados',JSON.stringify(objeto));
+
+
+
+
+    //OBTER OS ARQUIVOS QUE FORAM ENVIADOS PARA SESSION STORAGE
+
+    array_arquivos = []
+
+
+    if (sessionStorage.length >= 1){
+
+        for (_jj=0; _jj < sessionStorage.length; _jj++){
+            anexos = new Object();
+            anexos.indice = _jj+1
+            anexos.nomeArquivo = sessionStorage.key(_jj)
+            array_arquivos.push(anexos)
+
+        }
+    }
+
+    objeto.anexos = array_arquivos;
+  
+
+    // SALVANDO O OBJETO NO LOCALSTORAGE
+    if (array_produtos.length < 1){
+        alert("INSIRA PELO MENOS 1 PRODUTO")
+    }else if (array_arquivos.length < 1){
+        alert("INSIRA PELO MENOS 1 ANEXO")
+    }else{
+  
+        
+        $('#exampleModal').modal('show');
+
+        sessionStorage.setItem('dados',JSON.stringify(objeto));
+
+        retornoJson = sessionStorage.getItem('dados');
+
+        document.getElementById("respostaModal").innerHTML = "<h4> SALVO COM SUCESSO !</h4>"
+    }
+    
 
     
 }
+
+function getValorTotal(id){
+    let qtdEstoque = document.getElementById("inputQtdEstoque"+id).value;
+    let valorUnitario = document.getElementById("inputValorUnitario"+id).value;
+    qtdEstoque = parseInt(qtdEstoque)
+    valorUnitario = parseFloat(valorUnitario)
+
+    let valorTotal = qtdEstoque * valorUnitario
+    valorTotal = valorTotal.toFixed(2)
+
+    document.getElementById("inputValorTotal"+id).value = valorTotal
+
+   
+
+}
+
+ // Obtendo o nome do arquivo quando carregado
+
+
+ //Obter o arquivo quando feita a alteraçao
+ //instanciando
+ 
+
+
+ window.onload = function anexarArquivo(){
+    count = 1
+
+    //if Existir arquivo faço um for e mostro todos
+    if (sessionStorage.length >= 1){
+        for (j=0; j < sessionStorage.length; j++){
+            
+            if (sessionStorage.key(j) != "dados"){
+            
+                document.getElementById("arquivosMensagem").innerHTML = '<h6 class="alert alert-success"> Arquivos Anexados </h6>'; 
+                var divNova3 = document.createElement('div');
+                divNova3.className="border border-dark";
+                divNova3.id="div"+count
+                conteudo2 = '<h5><i class="fa fa-trash text-danger align-middle border border-danger m-2" onclick="deletarAnexo('+count+')"></i> '+
+                            '<a href="'+sessionStorage.getItem(sessionStorage.key(j))+'" download> <i class="fa-solid fa-eye border border-success text-success"></i></a> '+sessionStorage.key(j)+' <h5>'
+                divNova3.innerHTML = conteudo2
+                document.getElementById("arquivosAnexados").append(divNova3);  
+                count++
+            }
+        }
+    }
+    else{
+        document.getElementById("arquivosMensagem").innerHTML = "Nenhum Arquivo Adicionado"; 
+    }
+
+
+    document.querySelector("#myFileInput").addEventListener("change", function(e){
+
+        fileName = e.target.files[0].name;
+         const reader = new FileReader();
+         
+         //Carregar o arquivo na Session Storage
+         reader.addEventListener("load", () => {
+             sessionStorage.setItem(fileName, reader.result);  
+           
+         
+         var divNova3 = document.createElement('div');
+         divNova3.className="border border-dark";
+         divNova3.id="div"+count
+         dados_arquivo = sessionStorage.getItem(fileName)
+
+         conteudo3 = '<h5><i class="fa fa-trash text-danger align-middle border border-danger m-2" aria-hidden="true" onclick="deletarAnexo('+count+')"></i> '+
+                        '<a href="'+dados_arquivo+'" download> <i class="fa-solid fa-eye border border-success text-success"></i></a> '+fileName
+
+         divNova3.innerHTML = conteudo3;
+         document.getElementById("arquivosAnexados").append(divNova3);
+
+        });  
+         reader.readAsDataURL(this.files[0]); 
+             
+    });
+
+    
+}
+
+
+function deletarAnexo(file_id){
+  
+    let fileName2 = document.getElementById("div"+file_id).textContent;
+    fileName2 = fileName2.trim();
+    
+    if (window.confirm(`Deseja deletar o ${fileName2}?`)) {
+        
+        var el = document.getElementById('div'+file_id);
+        el.remove(el);
+
+        sessionStorage.removeItem(fileName2)
+      
+
+      }
+    
+    
+}
+
+let iconInput = document.getElementById('iconInput');
+let file = document.getElementById('myFileInput');
+
+iconInput.addEventListener('click', () => {
+    file.click();
+});
+
